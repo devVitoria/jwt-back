@@ -23,7 +23,7 @@ const Register = () => {
             console.log("FORMMMMM", form)
            const teste = await api.post('v1/usuarios', {
             cpfcnpj: form.getFieldValue("cpfcnpj"),
-            nome: form.getFieldValue("cpfcnpj"),
+            nome: form.getFieldValue("nome"),
             bairro: form.getFieldValue("bairro"),
             rua: form.getFieldValue("rua"),
             telefone: form.getFieldValue("telefone"),
