@@ -1,249 +1,297 @@
 'use client'
 
-import { api } from "@/providers/api"
-import { useForm } from "@tanstack/react-form"
+import Done from '@/assets/done'
+import { api } from '@/providers/api'
+import { useForm } from '@tanstack/react-form'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { ToastContainer, toast } from 'react-toastify'
 
 const Register = () => {
+  const [isSuccess, setIsSuccess] = useState(false)
+  const router = useRouter()
 
-    const form = useForm({
-        defaultValues: {
-            cpfcnpj: '',
-            nome: '',
-            telefone: '',
-            rua: '',
-            bairro: '',
-            cidade: '',
-            email: '',
-            password: '',
-            nroConta: '',
-            saldo: '',
+  const form = useForm({
+    defaultValues: {
+      cpfcnpj: '',
+      nome: '',
+      telefone: '',
+      rua: '',
+      bairro: '',
+      cidade: '',
+      email: '',
+      password: '',
+      nroConta: '',
+    },
+    onSubmit: async ({ value }) => {
+      console.log('FORM VALU  E', value)
+      // toast.error('CPF já está em uso por outro usuário!')
+      const verify = await api.post(`v1/usuarios/verify-data`, {
+        cpfcnpj: form.getFieldValue('cpfcnpj'),
+        nome: form.getFieldValue('nome'),
+        bairro: form.getFieldValue('bairro'),
+        rua: form.getFieldValue('rua'),
+        telefone: form.getFieldValue('telefone'),
+        cidade: form.getFieldValue('cidade'),
+        email: form.getFieldValue('email'),
+        password: form.getFieldValue('password'),
+        conta: {
+          nroConta: form.getFieldValue('nroConta'),
+          saldo: 0,
         },
-        onSubmit: async ({ value }) => {
-            console.log("VALUEEE", value)
-            console.log("FORMMMMM", form)
-           const teste = await api.post('v1/usuarios', {
-            cpfcnpj: form.getFieldValue("cpfcnpj"),
-            nome: form.getFieldValue("nome"),
-            bairro: form.getFieldValue("bairro"),
-            rua: form.getFieldValue("rua"),
-            telefone: form.getFieldValue("telefone"),
-            cidade: form.getFieldValue("cidade"),
-            email: form.getFieldValue("email"),
-            password: form.getFieldValue("password"),
-            conta: {
-                nroConta: form.getFieldValue("nroConta"),
-                saldo: form.getFieldValue("saldo")
-            }
+      })
 
-           })
-           console.log('o que veuio disso au', teste)
-        },
-    })
+      if (verify.data.exists) {
+        toast.error(`${verify.data.message} já está em uso por outro usuário!`)
+        return
+      }
+      // const teste = await api.post('v1/usuarios', {
+      //   cpfcnpj: form.getFieldValue('cpfcnpj'),
+      //   nome: form.getFieldValue('nome'),
+      //   bairro: form.getFieldValue('bairro'),
+      //   rua: form.getFieldValue('rua'),
+      //   telefone: form.getFieldValue('telefone'),
+      //   cidade: form.getFieldValue('cidade'),
+      //   email: form.getFieldValue('email'),
+      //   password: form.getFieldValue('password'),
+      //   conta: {
+      //     nroConta: form.getFieldValue('nroConta'),
+      //     saldo: 0,
+      //   },
+      // })
+      // console.log('TESTE', teste.status)
+      // if (teste.statusText === 'Created') {
+      //   setIsSuccess(true)
+      // }
+    },
+  })
 
-    return (
-        <div className="flex flex-1 justify-center items-center bg-gray-100" style={{ width: '100vw', height: '100vh' }}>
-            <div className="bg-white border-gray-50 shadow-sm p-10 items-center justify-between rounded-sm w-1/2">
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        form.handleSubmit()
-                    }}
-                >
-                    <p className="font-bold text-gray-600 justify-center w-full">Cadastro de usuários</p>
-                         <p className=" text-gray-600 justify-center text-xs w-full pb-4">Preencha os campos abaixo para registrar a sua conta!</p>
-                    <div className="flex flex-1 justify-between items-center w-full gap-4">
-                        <div className="flex flex-col gap-2 w-full">
+  const { Field } = form
 
-                            <form.Field
-                                name="cpfcnpj"
-                                children={(field) => (
-                                    <div className="flex flex-col gap-2 py-2">
-                                        <label htmlFor={field.name} className="font-bold text-gray-600 text-xs">CPF ou CNPJ:</label>
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) => field.handleChange(e.target.value)}
-                                        className="bg-gray-100 rounded-sm p-1 px-4 items-center outline-blue-100"
-                                        />
-                                    </div>
-                                )}
-                            />
-                            <form.Field
-                                name="nome"
-                                children={(field) => (
-                                    <div className="flex flex-col gap-2">
-                                        <label htmlFor={field.name} className="font-bold text-gray-600 text-xs">Nome:</label>
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) => field.handleChange(e.target.value)}
-                                            className="bg-gray-100 rounded-sm p-1 px-4 items-center outline-blue-100"
-                                        />
-                                    </div>
-                                )}
-                            />
+  useEffect(() => {
+    if (isSuccess) {
+      setTimeout(() => {
+        router.push('/login')
+      }, 6000)
+    }
+  }, [isSuccess])
 
-                            <form.Field
-                                name="telefone"
-                                children={(field) => (
-                                    <div className="flex flex-col gap-2">
-                                        <label htmlFor={field.name} className="font-bold text-gray-600 text-xs">Telefone:</label>
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) => field.handleChange(e.target.value)}
-                                            className="bg-gray-100 rounded-sm p-1 px-4 items-center outline-blue-100"
-                                        />
-                                    </div>
-                                )}
-                            />
+  return isSuccess ? (
+    <div
+      className="flex flex-1 flex-col gap-12 justify-center items-center bg-gray-600"
+      style={{ width: '100vw', height: '100vh' }}
+    >
+      <p className=" text-white justify-center w-full text-center">Seu cadastro foi registrado!</p>
+      <Done></Done>
+      <p className="text-white justify-center w-full text-center">
+        Em instantes você será redirecionado para a página de{' '}
+        <b className="font-bold text-teal-600">Login</b>.
+      </p>
+    </div>
+  ) : (
+    <div
+      className="flex flex-1 justify-center items-center bg-gradient-to-r from-[#000a0e] via-[#062c38] to-[#122b36] "
+      style={{ width: '100vw', height: '100vh' }}
+    >
+      <div className="bg-white/5 backdrop-blur-lg border border-white/20 shadow-xl rounded-2xl px-10 py-5 w-10/12 items-center justify-between">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            form.handleSubmit()
+          }}
+        >
+          <p className="font-bold text-white justify-center text-center text-xl w-full">
+            Cadastro de usuários
+          </p>
+          <p className=" text-white justify-center text-base text-center w-full pb-4">
+            Preencha os campos abaixo para registrar a sua conta.
+          </p>
+          <div className="flex flex-row w-full justify-between gap-4">
+            <div className="flex flex-col gap-2 w-1/2">
+              <Field name="cpfcnpj">
+                {(field) => (
+                  <div className="flex flex-col gap-2 py-2">
+                    <label htmlFor={field.name} className="font-bold text-white text-base">
+                      CPF ou CNPJ:
+                    </label>
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className=" bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
+                    />
+                  </div>
+                )}
+              </Field>
 
-                            <form.Field
-                                name="rua"
-                                children={(field) => (
-                                    <div className="flex flex-col gap-2">
-                                        <label htmlFor={field.name} className="font-bold text-gray-600 text-xs">Rua:</label>
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) => field.handleChange(e.target.value)}
-                                            className="bg-gray-100 rounded-sm p-1 px-4 items-center outline-blue-100"
-                                        />
-                                    </div>
-                                )}
-                            />
+              <Field name="nome">
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor={field.name} className="font-bold text-white text-base">
+                      Nome:
+                    </label>
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className=" bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
+                    />
+                  </div>
+                )}
+              </Field>
 
+              <Field name="telefone">
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor={field.name} className="font-bold text-white text-base">
+                      Telefone:
+                    </label>
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className=" bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
+                    />
+                  </div>
+                )}
+              </Field>
 
+              <Field name="rua">
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor={field.name} className="font-bold text-white text-base">
+                      Rua:
+                    </label>
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className=" bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
+                    />
+                  </div>
+                )}
+              </Field>
 
-                            <form.Field
-                                name="bairro"
-                                children={(field) => (
-                                    <div className="flex flex-col gap-2">
-                                        <label htmlFor={field.name} className="font-bold text-gray-600 text-xs">Bairro:</label>
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) => field.handleChange(e.target.value)}
-                                            className="bg-gray-100 rounded-sm p-1 px-4 items-center outline-blue-100"
-                                        />
-                                    </div>
-                                )}
-                            />
-
-                        </div>
-
-                        <div className="flex flex-col gap-2 w-full">
-
-
-
-                            <form.Field
-                                name="cidade"
-                                children={(field) => (
-                                    <div className="flex flex-col gap-2">
-                                        <label htmlFor={field.name} className="font-bold text-gray-600 text-xs">Cidade:</label>
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) => field.handleChange(e.target.value)}
-                                            className="bg-gray-100 rounded-sm p-1 px-4 items-center outline-blue-100"
-                                        />
-                                    </div>
-                                )}
-                            />
-
-
-                            <form.Field
-                                name="email"
-                                children={(field) => (
-                                    <div className="flex flex-col gap-2">
-                                        <label htmlFor={field.name} className="font-bold text-gray-600 text-xs">E-mail:</label>
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) => field.handleChange(e.target.value)}
-                                            className="bg-gray-100 rounded-sm p-1 px-4 items-center outline-blue-100"
-                                        />
-                                    </div>
-                                )}
-                            />
-
-
-
-                            <form.Field
-                                name="password"
-                                children={(field) => (
-                                    <div className="flex flex-col gap-2">
-                                        <label htmlFor={field.name} className="font-bold text-gray-600 text-xs">Password:</label>
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) => field.handleChange(e.target.value)}
-                                            className="bg-gray-100 rounded-sm p-1 px-4 items-center outline-blue-100"
-                                        />
-                                    </div>
-                                )}
-                            />
-
-                            <form.Field
-                                name="nroConta"
-                                children={(field) => (
-                                    <div className="flex flex-col gap-2">
-                                        <label htmlFor={field.name} className="font-bold text-gray-600 text-xs">Número da conta:</label>
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) => field.handleChange(e.target.value)}
-                                            className="bg-gray-100 rounded-sm p-1 px-4 items-center outline-blue-100"
-                                        />
-                                    </div>
-                                )}
-                            />
-                            <form.Field
-                                name="saldo"
-                                children={(field) => (
-                                    <div className="flex flex-col gap-2">
-                                        <label htmlFor={field.name} className="font-bold text-gray-600 text-xs">Valor inicial da conta:</label>
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) => field.handleChange(e.target.value)}
-                                            className="bg-gray-100 rounded-sm p-1 px-4 items-center outline-blue-100"
-                                        />
-                                    </div>
-                                )}
-                            />
-                        </div>
-                        </div>
-                        <div className="flex w-full justify-end items-end">
-                        <button type="submit" className="bg-[#4a5565] text-white font-bold p-1 rounded-sm shadow-sm px-6 mt-4 items-end cursor-pointer hover:bg-gray-400 transition-colors">Enviar</button>
-                        </div>
-                </form>
+              <Field name="bairro">
+                {(field) => (
+                  <div className="flex flex-col gap-2 flex-1">
+                    <label htmlFor={field.name} className="font-bold text-white text-base">
+                      Bairro:
+                    </label>
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className=" bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
+                    />
+                  </div>
+                )}
+              </Field>
             </div>
 
+            <div className="flex flex-col gap-2 w-1/2">
+              <Field name="cidade">
+                {(field) => (
+                  <div className="flex flex-col gap-2 py-2">
+                    <label htmlFor={field.name} className="font-bold text-white text-base">
+                      Cidade:
+                    </label>
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className=" bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
+                    />
+                  </div>
+                )}
+              </Field>
 
-        </div>
-    )
+              <Field name="email">
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor={field.name} className="font-bold text-white text-base">
+                      E-mail:
+                    </label>
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className=" bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
+                    />
+                  </div>
+                )}
+              </Field>
+
+              <Field name="password">
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor={field.name} className="font-bold text-white text-base">
+                      Password:
+                    </label>
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className=" bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
+                    />
+                  </div>
+                )}
+              </Field>
+
+              <Field name="nroConta">
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor={field.name} className="font-bold text-white text-base">
+                      Número da conta:
+                    </label>
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className="bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
+                    />
+                  </div>
+                )}
+              </Field>
+            </div>
+          </div>
+          <div className="flex w-full flex-row justify-end  gap-4 items-end">
+            <button
+              type="submit"
+              className=" cursor-pointer bg-white/15 border border-blue/20 rounded-lg px-4 py-2 text-white placeholder-white/50 font-bold focus:border-white/30 focus:outline-none"
+            >
+              Limpar
+            </button>
+            <button
+              type="submit"
+              className=" cursor-pointer bg-[#062c38]/50 border border-blue/20 rounded-lg px-4 py-2 text-white placeholder-white/50 font-bold focus:border-white/30 focus:outline-none"
+            >
+              Enviar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
 }
 
 export default Register

@@ -1,108 +1,154 @@
 'use client'
-import { api } from "@/providers/api"
-import { useForm } from "@tanstack/react-form"
-import { useRouter } from 'next/navigation';
+import { api } from '@/providers/api'
+import { useForm } from '@tanstack/react-form'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { GoMail } from 'react-icons/go'
+import { MdPassword, MdPix } from 'react-icons/md'
+import { TbEyeglassFilled, TbEyeglassOff } from 'react-icons/tb'
+import ModalPixConsult from './utils/modal-pix-consult'
 
 const Login = () => {
-    const route = useRouter()
-     const form = useForm({
-            defaultValues: {
-                email: '',
-                password: '',
-     
-            },
-            onSubmit: async ({ value }) => {
-                console.log("VALUEEE", value)
-                console.log("FORMMMMM", form)
-                const teste = await api.post('v1/autenticacao/login', {
-                email: form.getFieldValue("email"),
-                password: form.getFieldValue("password"),
-        
+  const [showPsd, setShowPsd] = useState(false)
+  const [modalPix, setModalPix] = useState(false)
+  const route = useRouter()
+  const form = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    onSubmit: async ({ value }) => {
+      console.log('VALUEEE', value)
+      console.log('FORMMMMM', form)
+      const teste = await api.post('v1/autenticacao/login', {
+        email: form.getFieldValue('email'),
+        password: form.getFieldValue('password'),
+      })
+      console.log('TESTEEEE', teste)
+      localStorage.setItem('Token', teste?.data.token)
+      localStorage.setItem('Nome', teste?.data.nameUser)
+      localStorage.setItem('Saldo', teste?.data.saldo)
+      setTimeout(() => {
+        route.push('/transactions')
+      }, 1000)
+    },
+  })
 
-               })
-               console.log("TESTEEEE", teste)
-               localStorage.setItem('Token', teste?.data.token)
-               localStorage.setItem("Nome", teste?.data.nameUser )
-               localStorage.setItem("Saldo", teste?.data.saldo )
-               setTimeout(() => {
-               route.push('/transactions')
-               }, 1000)
-            },
-        })
+  const { Field } = form
+  return (
+    <div
+      className="flex flex-1 justify-center items-center bg-gradient-to-r from-[#000a0e] via-[#062c38] to-[#122b36] "
+      style={{ width: '100vw', height: '100vh' }}
+    >
+      <div
+        onClick={() => {
+          setModalPix(true)
+        }}
+        className="flex cursor-pointer flex-row items-center gap-2 absolute right-2 top-2 w-1/4 py-2 bg-white/15 border border-white/20 rounded-lg px-4 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
+      >
+        <MdPix size={20} />
 
-    return (
-        <div className="flex flex-1 justify-center items-center bg-gray-100" style={{ width: '100vw', height: '100vh' }}>
-            <div className="bg-white border-gray-50 shadow-sm p-10 items-center justify-between rounded-sm w-1/2">
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        form.handleSubmit()
-                    }}
-                >
-                    <p className="font-bold text-gray-600 justify-center w-full">Iniciar sessão</p>
-                    <p className=" text-gray-600 justify-center text-xs w-full pb-4">Preencha os campos abaixo para acessar a sua conta!</p>
-                    <div className="flex flex-1 justify-between items-center w-full gap-4">
+        <p className="text-white font-bold">Consultar chave PIX</p>
+      </div>
+      <div className="bg-white/5 backdrop-blur-lg border border-white/20 shadow-xl rounded-2xl px-10 py-5 w-1/2">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            form.handleSubmit()
+          }}
+        >
+          <p className="font-bold text-white justify-center text-center text-xl w-full">
+            Iniciar sessão
+          </p>
+          <p className=" text-white justify-center text-base text-center w-full pb-4">
+            Preencha os campos abaixo para acessar a sua conta.
+          </p>
+          <div className="flex flex-1 justify-between items-center w-full gap-4">
+            <div className="flex flex-col gap-6 w-full">
+              <Field name="email">
+                {(field) => (
+                  <div className="flex flex-col gap-2 justify-center items-center">
+                    <div className="flex flex-row gap-2 items-center w-10/12 justify-start ms-1">
+                      <GoMail size={20} />
 
-
-                        <div className="flex flex-col gap-2 w-full">
-
-
-
-                            <form.Field
-                                name="email"
-                                children={(field) => (
-                                    <div className="flex flex-col gap-2">
-                                        <label htmlFor={field.name} className="font-bold text-gray-600 text-xs">E-mail:</label>
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) => field.handleChange(e.target.value)}
-                                            className="bg-gray-100 rounded-sm p-1 px-4 items-center outline-blue-100"
-                                        />
-                                    </div>
-                                )}
-                            />
-
-                            <form.Field
-                                name="password"
-                                children={(field) => (
-                                    <div className="flex flex-col gap-2">
-                                        <label htmlFor={field.name} className="font-bold text-gray-600 text-xs">Password:</label>
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) => field.handleChange(e.target.value)}
-                                            className="bg-gray-100 rounded-sm p-1 px-4 items-center outline-blue-100"
-                                        />
-                                    </div>
-                                )}
-                            />
-
-
-                          
-                        </div>
+                      <label
+                        htmlFor={field.name}
+                        className="text-start w-10/12 text-white text-base"
+                      >
+                        E-mail
+                      </label>
                     </div>
-                    <div className="flex w-full justify-end items-end">
-                        <button type="submit" className="bg-[#4a5565] text-white font-bold p-1 rounded-sm shadow-sm px-6 mt-4 items-end cursor-pointer hover:bg-gray-400 transition-colors">Enviar</button>
+                    <input
+                      title="email"
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className="w-10/12 bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
+                    />
+                  </div>
+                )}
+              </Field>
+
+              <Field name="password">
+                {(field) => (
+                  <div className="flex flex-col gap-2 items-center">
+                    <div className="flex flex-row gap-2 items-center w-10/12 justify-start">
+                      <MdPassword size={20} />
+
+                      <label
+                        htmlFor={field.name}
+                        className="text-start w-10/12 text-white text-base"
+                      >
+                        Password
+                      </label>
                     </div>
-                </form>
+
+                    <input
+                      type={showPsd ? 'text' : 'password'}
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className="w-10/12 bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
+                    />
+
+                    <div
+                      className="absolute right-26 top-57 cursor-pointer hover:transition"
+                      onClick={() => setShowPsd(!showPsd)}
+                    >
+                      {' '}
+                      {showPsd ? <TbEyeglassFilled size={20} /> : <TbEyeglassOff size={20} />}
+                    </div>
+                  </div>
+                )}
+              </Field>
             </div>
+          </div>
+          <div className="flex w-full justify-center items-center pt-8">
+            <button
+              type="submit"
+              className="w-1/2 cursor-pointer bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 font-bold focus:border-white/30 focus:outline-none"
+            >
+              Enviar
+            </button>
+          </div>
+          <p className="text-sm text-white w-full text-center pt-2 cursor-pointer">
+            Não possui cadastro? <b className="underline text-sm">Crie uma conta</b>
+          </p>
+        </form>
+      </div>
 
-
+      {modalPix && (
+        <div className="absolute">
+          <ModalPixConsult closeModal={() => setModalPix(false)} />{' '}
         </div>
-
-
-    )
-
-
+      )}
+    </div>
+  )
 }
 
 export default Login
-
-
-
