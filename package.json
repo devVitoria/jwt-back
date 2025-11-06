@@ -13,6 +13,7 @@
     "@tanstack/react-form": "^1.23.7",
     "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
+    "encyrpt-decrypt-env": "^1.0.10",
     "jose": "^6.1.0",
     "next": "15.5.4",
     "postcss": "^8.5.6",

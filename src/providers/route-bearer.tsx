@@ -8,11 +8,12 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname()
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
+    console.log("Ta entrandpa aqu i nessa bucet")
+    const token = localStorage.getItem('Token')
 
     const publicRoutes = ['/login', '/register']
-
     if (!token && !publicRoutes.includes(pathname)) {
+      console.log('vai voltra pro loginnn')
       router.replace('/login')
     }
   }, [pathname, router])

@@ -42,6 +42,7 @@ const Transactions = () => {
 
   console.log('USUARIOOOOOOOOOOOOOO', localStorage.length)
   console.log('Aloiiis', localStorage.getItem('Nome'))
+  console.log('Tokennn', localStorage.getItem('Token') )
   //   const awaitUser = async () => {
   //     return await localStorage.getItem('Nome')
   //   }
@@ -53,7 +54,7 @@ const Transactions = () => {
 
   const renderScreen: Record<string, React.ReactNode> = {
     transactions: <Transaction />,
-    history: <div>Histórico de transações</div>,
+    history: <div className='text-white'>Histórico de transações</div>,
     chavepix: <PixkeyRegister />,
     deposite: <Deposit />,
   }
@@ -91,7 +92,7 @@ const Transactions = () => {
         >
           <div className="flex w-full flex-col items-center justify-center gap-4">
             <div
-              className={`w-16 h-16 rounded-full bg-[#000a0e]/25 shadow-sm border ${operation === 'transactions' ? 'border-white ' : 'border-[#000a0e]'} border-white flex justify-center items-center`}
+              className={`w-16 h-16 rounded-full bg-[#000a0e]/25 shadow-sm border ${operation === 'transactions' ? 'border-white ' : 'border-[#000a0e]'} flex justify-center items-center`}
             >
               <MdPix size={30} color="white" />
             </div>
@@ -109,7 +110,7 @@ const Transactions = () => {
             >
               <FaHistory size={30} color="white" />
             </div>
-            <p className="text-lg text-white text-center">Histórico de transações</p>
+            <p className="text-lg text-white text-center text-white">Histórico de transações</p>
           </div>
         </div>
 

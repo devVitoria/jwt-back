@@ -24,10 +24,17 @@ const Login = () => {
         email: form.getFieldValue('email'),
         password: form.getFieldValue('password'),
       })
-      console.log('TESTEEEE', teste)
+
+      console.log("TESTEEEE", teste)
+      console.log('Valoresssssss ', {
+        "TOKEN:": teste?.data.token,
+        "NOMMME": teste?.data.nameUser,
+        "SALDOOO": teste?.data.saldo
+      })
       localStorage.setItem('Token', teste?.data.token)
       localStorage.setItem('Nome', teste?.data.nameUser)
       localStorage.setItem('Saldo', teste?.data.saldo)
+      localStorage.setItem('UserId', teste?.data.userId)
       setTimeout(() => {
         route.push('/transactions')
       }, 1000)
@@ -70,7 +77,7 @@ const Login = () => {
                 {(field) => (
                   <div className="flex flex-col gap-2 justify-center items-center">
                     <div className="flex flex-row gap-2 items-center w-10/12 justify-start ms-1">
-                      <GoMail size={20} />
+                      <GoMail size={20} color='white'/>
 
                       <label
                         htmlFor={field.name}
@@ -96,7 +103,7 @@ const Login = () => {
                 {(field) => (
                   <div className="flex flex-col gap-2 items-center">
                     <div className="flex flex-row gap-2 items-center w-10/12 justify-start">
-                      <MdPassword size={20} />
+                      <MdPassword size={20} color='white'/>
 
                       <label
                         htmlFor={field.name}
@@ -117,11 +124,11 @@ const Login = () => {
                     />
 
                     <div
-                      className="absolute right-26 top-57 cursor-pointer hover:transition"
+                      className="absolute right-32 top-57 cursor-pointer hover:transition"
                       onClick={() => setShowPsd(!showPsd)}
                     >
                       {' '}
-                      {showPsd ? <TbEyeglassFilled size={20} /> : <TbEyeglassOff size={20} />}
+                      {showPsd ? <TbEyeglassFilled size={20} color='white'/> : <TbEyeglassOff size={20} color='white'/>}
                     </div>
                   </div>
                 )}
@@ -136,9 +143,13 @@ const Login = () => {
               Enviar
             </button>
           </div>
+          <div onClick={() => {
+              route.push('/register')
+          }}>
           <p className="text-sm text-white w-full text-center pt-2 cursor-pointer">
-            Não possui cadastro? <b className="underline text-sm">Crie uma conta</b>
+            Não possui cadastro? <b className="underline text-sm mr-2">Crie uma conta</b>
           </p>
+          </div>
         </form>
       </div>
 

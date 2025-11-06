@@ -24,8 +24,6 @@ const Register = () => {
       nroConta: '',
     },
     onSubmit: async ({ value }) => {
-      console.log('FORM VALU  E', value)
-      // toast.error('CPF já está em uso por outro usuário!')
       const verify = await api.post(`v1/usuarios/verify-data`, {
         cpfcnpj: form.getFieldValue('cpfcnpj'),
         nome: form.getFieldValue('nome'),
@@ -44,26 +42,26 @@ const Register = () => {
       if (verify.data.exists) {
         toast.error(`${verify.data.message} já está em uso por outro usuário!`)
         return
+      } else {
+      const teste = await api.post('v1/usuarios', {
+        cpfcnpj: form.getFieldValue('cpfcnpj'),
+        nome: form.getFieldValue('nome'),
+        bairro: form.getFieldValue('bairro'),
+        rua: form.getFieldValue('rua'),
+        telefone: form.getFieldValue('telefone'),
+        cidade: form.getFieldValue('cidade'),
+        email: form.getFieldValue('email'),
+        password: form.getFieldValue('password'),
+        conta: {
+          nroConta: form.getFieldValue('nroConta'),
+          saldo: 0,
+        },
+      })
+      console.log('TESTE', teste.status)
+      if (teste.statusText === 'Created') {
+        setIsSuccess(true)
       }
-      // const teste = await api.post('v1/usuarios', {
-      //   cpfcnpj: form.getFieldValue('cpfcnpj'),
-      //   nome: form.getFieldValue('nome'),
-      //   bairro: form.getFieldValue('bairro'),
-      //   rua: form.getFieldValue('rua'),
-      //   telefone: form.getFieldValue('telefone'),
-      //   cidade: form.getFieldValue('cidade'),
-      //   email: form.getFieldValue('email'),
-      //   password: form.getFieldValue('password'),
-      //   conta: {
-      //     nroConta: form.getFieldValue('nroConta'),
-      //     saldo: 0,
-      //   },
-      // })
-      // console.log('TESTE', teste.status)
-      // if (teste.statusText === 'Created') {
-      //   setIsSuccess(true)
-      // }
-    },
+    }},
   })
 
   const { Field } = form

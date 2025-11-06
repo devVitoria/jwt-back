@@ -38,7 +38,7 @@ const Transaction = () => {
             pix3
           </option>
         </select>
-        <p className="text-sm font-bold">
+        <p className="text-sm font-bold text-white">
           A chave definida servirá como identificador para o recebedor.
         </p>
       </div>
@@ -102,7 +102,7 @@ const Transaction = () => {
           <div className="flex justify-center items-center">
             <button
               type="submit"
-              className=" px-18 py-2 cursor-pointer bg-white/5 border border-white/20 rounded-lg hover:via-[#326579] hover:to-[#8ba3ad] transition-all"
+              className=" px-18 py-2 cursor-pointer bg-white/5 border border-white/20 rounded-lg hover:via-[#326579] hover:to-[#8ba3ad] transition-all text-white"
             >
               Autorizar operação
               <p className="text-xs">Sua senha será requisitada para finalizar o processo.</p>

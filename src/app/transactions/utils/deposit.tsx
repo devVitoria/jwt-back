@@ -1,18 +1,24 @@
 'use client'
+import { api } from '@/providers/api'
 import { useForm } from '@tanstack/react-form'
-import { BsFillSendFill } from 'react-icons/bs'
-import { GoMail } from 'react-icons/go'
+import { useState } from 'react'
 import { LiaMoneyBillWaveSolid } from 'react-icons/lia'
-import { RiFileUserFill } from 'react-icons/ri'
 
 const Deposit = () => {
+  const [isSuccess, setIsSuccess] = useState(false)
   const form = useForm({
     defaultValues: {
-      email: '',
-      password: '',
+      value: '',
     },
     onSubmit: async ({ value }) => {
-      console.log('VALUEEE', value)
+      const teste = await api.post('/v1/conta', {
+        saldo: form.getFieldValue('value'),
+        usuarioId: localStorage.getItem('UserId')
+      })
+
+      if (teste.status) 
+        setIsSuccess(true)
+    
     },
   })
 
@@ -34,18 +40,18 @@ const Deposit = () => {
           }}
           className="gap-4 flex-col flex"
         >
-          <Field name="password">
+          <Field name="value">
             {(field) => (
               <div className="flex flex-col gap-2 justify-start items-start">
                 <div className="flex flex-row gap-2 items-center justify-start">
-                  <LiaMoneyBillWaveSolid size={20} />
+                  <LiaMoneyBillWaveSolid size={20} color='white' />
 
-                  <label htmlFor={field.name} className="text-start text-white text-base">
+                  <label htmlFor={field.name} className="text-start text-white text-base text-white">
                     Valor da transação
                   </label>
                 </div>
                 <input
-                  title="email"
+                  title="valor"
                   id={field.name}
                   name={field.name}
                   value={field.state.value}
@@ -59,7 +65,7 @@ const Deposit = () => {
           <div className="flex justify-start items-start">
             <button
               type="submit"
-              className=" px-18 py-2 cursor-pointer bg-white/5 border border-white/20 rounded-lg hover:via-[#326579] hover:to-[#8ba3ad] transition-all"
+              className=" px-18 py-2 cursor-pointer bg-white/5 border border-white/20 rounded-lg hover:via-[#326579] hover:to-[#8ba3ad] transition-all text-white"
             >
               Autorizar operação
               <p className="text-xs">Sua senha será requisitada para finalizar o processo.</p>
