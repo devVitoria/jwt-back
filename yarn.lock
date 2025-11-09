@@ -672,6 +672,13 @@
   resolved "https://registry.yarnpkg.com/@tanstack/devtools-event-client/-/devtools-event-client-0.3.4.tgz#4915e6dfb7070d15dc1f9d2997af59420373a061"
   integrity sha512-eq+PpuutUyubXu+ycC1GIiVwBs86NF/8yYJJAKSpPcJLWl6R/761F1H4F/9ziX6zKezltFUH1ah3Cz8Ah+KJrw==
 
+"@tanstack/form-core@0.42.1":
+  version "0.42.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/form-core/-/form-core-0.42.1.tgz#9b13dda654f2470d840f563ec0e1d106e30a551e"
+  integrity sha512-jTU0jyHqFceujdtPNv3jPVej1dTqBwa8TYdIyWB5BCwRVUBZEp1PiYEBkC9r92xu5fMpBiKc+JKud3eeVjuMiA==
+  dependencies:
+    "@tanstack/store" "^0.7.0"
+
 "@tanstack/form-core@1.24.4":
   version "1.24.4"
   resolved "https://registry.yarnpkg.com/@tanstack/form-core/-/form-core-1.24.4.tgz#2137075c5143bc9f96eea2c01521d8241aa79976"
@@ -707,10 +714,17 @@
     "@tanstack/store" "0.7.7"
     use-sync-external-store "^1.5.0"
 
-"@tanstack/store@0.7.7", "@tanstack/store@^0.7.5", "@tanstack/store@^0.7.7":
+"@tanstack/store@0.7.7", "@tanstack/store@^0.7.0", "@tanstack/store@^0.7.5", "@tanstack/store@^0.7.7":
   version "0.7.7"
   resolved "https://registry.yarnpkg.com/@tanstack/store/-/store-0.7.7.tgz#2c8b1d8c094f3614ae4e0483253239abd0e14488"
   integrity sha512-xa6pTan1bcaqYDS9BDpSiS63qa6EoDkPN9RsRaxHuDdVDNntzq3xNwR5YKTU/V3SkSyC9T4YVOPh2zRQN0nhIQ==
+
+"@tanstack/zod-form-adapter@^0.42.1":
+  version "0.42.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/zod-form-adapter/-/zod-form-adapter-0.42.1.tgz#92ebedad52492026a4a0da588eeaa18020024110"
+  integrity sha512-hPRM0lawVKP64yurW4c6KHZH6altMo2MQN14hfi+GMBTKjO9S7bW1x5LPZ5cayoJE3mBvdlahpSGT5rYZtSbXQ==
+  dependencies:
+    "@tanstack/form-core" "0.42.1"
 
 "@tybys/wasm-util@^0.10.0", "@tybys/wasm-util@^0.10.1":
   version "0.10.1"
@@ -3491,7 +3505,7 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/zod-validation-error/-/zod-validation-error-4.0.2.tgz#bc605eba49ce0fcd598c127fee1c236be3f22918"
   integrity sha512-Q6/nZLe6jxuU80qb/4uJ4t5v2VEZ44lzQjPDhYJNztRQ4wyWc6VF3D3Kb/fAuPetZQnhS3hnajCf9CsWesghLQ==
 
-"zod@^3.25.0 || ^4.0.0":
+"zod@^3.25.0 || ^4.0.0", zod@^4.1.12:
   version "4.1.12"
   resolved "https://registry.yarnpkg.com/zod/-/zod-4.1.12.tgz#64f1ea53d00eab91853195653b5af9eee68970f0"
   integrity sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==

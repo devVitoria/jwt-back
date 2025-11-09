@@ -5,11 +5,17 @@ import { api } from '@/providers/api'
 import { useForm } from '@tanstack/react-form'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ToastContainer, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
+
+import { maskCep, maskCPF, maskPhone } from '@/providers/masks'
+import { TbEyeglassFilled, TbEyeglassOff } from 'react-icons/tb'
 
 const Register = () => {
   const [isSuccess, setIsSuccess] = useState(false)
+  const [cepData, setCepData] = useState('')
   const router = useRouter()
+  const [showPsd, setShowPsd] = useState(false)
+
 
   const form = useForm({
     defaultValues: {
@@ -22,8 +28,9 @@ const Register = () => {
       email: '',
       password: '',
       nroConta: '',
+      cep: '',
     },
-    onSubmit: async ({ value }) => {
+    onSubmit: async () => {
       const verify = await api.post(`v1/usuarios/verify-data`, {
         cpfcnpj: form.getFieldValue('cpfcnpj'),
         nome: form.getFieldValue('nome'),
@@ -38,11 +45,32 @@ const Register = () => {
           saldo: 0,
         },
       })
-
       if (verify.data.exists) {
-        toast.error(`${verify.data.message} já está em uso por outro usuário!`)
+        const numberOfMessages = verify.data.message?.length
+        const message = verify.data.message
+        if (numberOfMessages <= 0) return message
+        else {
+          message.splice(numberOfMessages - 1, 0, 'e')
+        }
+        let formattedMessage = ''
+        for (const mg of message) {
+          const nextIndex = message.indexOf(mg) + 1
+          const idx = message.indexOf(mg)
+          formattedMessage +=
+            message[nextIndex] === 'e'
+              ? ` ${mg} `
+              : mg === 'e'
+                ? ` ${mg} `
+                : idx === message.length - 1
+                  ? ` ${mg} `
+                  : `${mg}, `
+        }
+        toast.error(
+          `${numberOfMessages > 0 ? 'Os campos' : 'O campo'} ${formattedMessage} já est${numberOfMessages > 0 ? 'ão' : 'á'} em uso por outro usuário!`,
+        )
         return
-      } else {
+      }
+
       const teste = await api.post('v1/usuarios', {
         cpfcnpj: form.getFieldValue('cpfcnpj'),
         nome: form.getFieldValue('nome'),
@@ -61,7 +89,7 @@ const Register = () => {
       if (teste.statusText === 'Created') {
         setIsSuccess(true)
       }
-    }},
+    },
   })
 
   const { Field } = form
@@ -74,11 +102,24 @@ const Register = () => {
     }
   }, [isSuccess])
 
+  useEffect(() => {
+    const cepInfo = async () => {
+      if (cepData.length === 8) {
+        const dadosCep = await api.get(`https://brasilapi.com.br/api/cep/v1/${cepData}`)
+        form.setFieldValue('rua', dadosCep.data.street)
+        form.setFieldValue('bairro', dadosCep.data.neighborhood)
+        form.setFieldValue('cidade', dadosCep.data.city)
+      }
+    }
+    cepInfo()
+  }, [cepData])
+
   return isSuccess ? (
     <div
       className="flex flex-1 flex-col gap-12 justify-center items-center bg-gray-600"
       style={{ width: '100vw', height: '100vh' }}
     >
+      {/* <ToastContainer /> */}
       <p className=" text-white justify-center w-full text-center">Seu cadastro foi registrado!</p>
       <Done></Done>
       <p className="text-white justify-center w-full text-center">
@@ -111,16 +152,22 @@ const Register = () => {
                 {(field) => (
                   <div className="flex flex-col gap-2 py-2">
                     <label htmlFor={field.name} className="font-bold text-white text-base">
-                      CPF ou CNPJ:
+                      CPF:
                     </label>
                     <input
                       id={field.name}
+                      maxLength={11}
                       name={field.name}
-                      value={field.state.value}
+                      value={maskCPF(field.state.value)}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       className=" bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
                     />
+                    {field.state.meta.errors && (
+                      <span className="text-red-400 text-sm">
+                        {field.state.meta.errors.join(', ')}
+                      </span>
+                    )}
                   </div>
                 )}
               </Field>
@@ -151,10 +198,33 @@ const Register = () => {
                     </label>
                     <input
                       id={field.name}
+                      maxLength={11}
                       name={field.name}
-                      value={field.state.value}
+                      value={maskPhone(field.state.value)}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
+                      className=" bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
+                    />
+                  </div>
+                )}
+              </Field>
+
+              <Field name="cep">
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor={field.name} className="font-bold text-white text-base">
+                      CEP:
+                    </label>
+                    <input
+                      id={field.name}
+                      maxLength={8}
+                      name={field.name}
+                      value={maskCep(field.state.value)}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => {
+                        field.handleChange(e.target.value)
+                        setCepData(e.target.value)
+                      }}
                       className=" bg-white/15 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-white/30 focus:outline-none"
                     />
                   </div>
@@ -243,6 +313,8 @@ const Register = () => {
                     </label>
                     <input
                       id={field.name}
+                      type={showPsd ? 'text' : 'password'}
+                      maxLength={6}
                       name={field.name}
                       value={field.state.value}
                       onBlur={field.handleBlur}
@@ -252,6 +324,18 @@ const Register = () => {
                   </div>
                 )}
               </Field>
+
+              <div
+                className="absolute right-16 top-78 cursor-pointer hover:transition"
+                onClick={() => setShowPsd(!showPsd)}
+              >
+                {' '}
+                {showPsd ? (
+                  <TbEyeglassFilled size={20} color="white" />
+                ) : (
+                  <TbEyeglassOff size={20} color="white" />
+                )}
+              </div>
 
               <Field name="nroConta">
                 {(field) => (
