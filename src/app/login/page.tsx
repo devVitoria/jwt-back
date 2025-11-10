@@ -17,20 +17,12 @@ const Login = () => {
       email: '',
       password: '',
     },
-    onSubmit: async ({ value }) => {
-      console.log('VALUEEE', value)
-      console.log('FORMMMMM', form)
+    onSubmit: async () => {
       const teste = await api.post('v1/autenticacao/login', {
         email: form.getFieldValue('email'),
         password: form.getFieldValue('password'),
       })
 
-      console.log("TESTEEEE", teste)
-      console.log('Valoresssssss ', {
-        "TOKEN:": teste?.data.token,
-        "NOMMME": teste?.data.nameUser,
-        "SALDOOO": teste?.data.saldo
-      })
       localStorage.setItem('Token', teste?.data.token)
       localStorage.setItem('Nome', teste?.data.nameUser)
       localStorage.setItem('Saldo', teste?.data.saldo)

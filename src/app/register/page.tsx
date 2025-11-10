@@ -16,7 +16,6 @@ const Register = () => {
   const router = useRouter()
   const [showPsd, setShowPsd] = useState(false)
 
-
   const form = useForm({
     defaultValues: {
       cpfcnpj: '',
@@ -48,8 +47,7 @@ const Register = () => {
       if (verify.data.exists) {
         const numberOfMessages = verify.data.message?.length
         const message = verify.data.message
-        if (numberOfMessages <= 0) return message
-        else {
+        if (numberOfMessages > 1) {
           message.splice(numberOfMessages - 1, 0, 'e')
         }
         let formattedMessage = ''
@@ -66,7 +64,7 @@ const Register = () => {
                   : `${mg}, `
         }
         toast.error(
-          `${numberOfMessages > 0 ? 'Os campos' : 'O campo'} ${formattedMessage} já est${numberOfMessages > 0 ? 'ão' : 'á'} em uso por outro usuário!`,
+          `${numberOfMessages > 1 ? 'Os campos' : 'O campo'} ${formattedMessage} já est${numberOfMessages > 1 ? 'ão' : 'á'} em uso por outro usuário!`,
         )
         return
       }
@@ -85,7 +83,6 @@ const Register = () => {
           saldo: 0,
         },
       })
-      console.log('TESTE', teste.status)
       if (teste.statusText === 'Created') {
         setIsSuccess(true)
       }

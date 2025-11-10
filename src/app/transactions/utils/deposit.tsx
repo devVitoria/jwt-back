@@ -1,26 +1,35 @@
 'use client'
 import { api } from '@/providers/api'
 import { useForm } from '@tanstack/react-form'
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { LiaMoneyBillWaveSolid } from 'react-icons/lia'
+import { toast } from 'react-toastify'
 
-const Deposit = () => {
+type DepositProps = {
+  setSaldo: Dispatch<SetStateAction<number>>
+}
+const Deposit = ({ setSaldo }: DepositProps) => {
   const [isSuccess, setIsSuccess] = useState(false)
   const form = useForm({
     defaultValues: {
       value: '',
     },
     onSubmit: async ({ value }) => {
-      const teste = await api.post('/v1/conta', {
-        saldo: form.getFieldValue('value'),
-        usuarioId: localStorage.getItem('UserId')
+      const teste = await api.patch('/v1/conta', {
+        saldo: Number(form.getFieldValue('value')),
+        usuarioId: Number(localStorage.getItem('UserId')),
       })
 
-      if (teste.status) 
-        setIsSuccess(true)
-    
+      if (teste.status) setIsSuccess(true)
     },
   })
+
+  useEffect(() => {
+    if (!isSuccess) return
+    toast.success('Saldo da conta atualizado com sucesso!')
+    setSaldo((prev: number) => prev + Number(form.getFieldValue('value')))
+    form.reset()
+  }, [isSuccess])
 
   const { Field } = form
   return (
@@ -44,10 +53,13 @@ const Deposit = () => {
             {(field) => (
               <div className="flex flex-col gap-2 justify-start items-start">
                 <div className="flex flex-row gap-2 items-center justify-start">
-                  <LiaMoneyBillWaveSolid size={20} color='white' />
+                  <LiaMoneyBillWaveSolid size={20} color="white" />
 
-                  <label htmlFor={field.name} className="text-start text-white text-base text-white">
-                    Valor da transação
+                  <label
+                    htmlFor={field.name}
+                    className="text-start text-white text-base text-white"
+                  >
+                    Valor do depósito
                   </label>
                 </div>
                 <input

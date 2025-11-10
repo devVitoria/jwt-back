@@ -2,20 +2,25 @@
 import { api } from '@/providers/api'
 import { useForm } from '@tanstack/react-form'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { BsCoin } from 'react-icons/bs'
-import { FaHistory } from 'react-icons/fa'
+import { FaHistory, FaUserCircle } from 'react-icons/fa'
 import { MdPix } from 'react-icons/md'
 import { TfiKey } from 'react-icons/tfi'
 import Transaction from './utils/transaction'
 import PixkeyRegister from './utils/pix-key-register'
 import Deposit from './utils/deposit'
+import { set } from 'zod'
+import { IoNotificationsCircleOutline } from 'react-icons/io5'
 
 const Transactions = () => {
   const route = useRouter()
   const [operation, setOperation] = useState<'transactions' | 'history' | 'chavepix' | 'deposite'>(
     'transactions',
   )
+  const [saldo, setSaldo] = useState<number>(Number(localStorage.getItem('Saldo')) ?? 0)
+  const [chaves, setChaves] = useState<{ chave: string; tipo: string }[]>([])
+  const [openUser, setOpenUser] = useState(false)
 
   const form = useForm({
     defaultValues: {
@@ -24,13 +29,10 @@ const Transactions = () => {
       valor: 0,
     },
     onSubmit: async ({ value }) => {
-      console.log('VALUEEE', value)
-      console.log('FORMMMMM', form)
       const teste = await api.post('v1/autenticacao/login', {
         // email: form.getFieldValue('email'),
         // password: form.getFieldValue('password'),
       })
-      console.log('TESTEEEE', teste)
       localStorage.setItem('Token', teste?.data.token)
       localStorage.setItem('Nome', teste?.data.nameUser)
       localStorage.setItem('Saldo', teste?.data.saldo)
@@ -40,9 +42,6 @@ const Transactions = () => {
     },
   })
 
-  console.log('USUARIOOOOOOOOOOOOOO', localStorage.length)
-  console.log('Aloiiis', localStorage.getItem('Nome'))
-  console.log('Tokennn', localStorage.getItem('Token') )
   //   const awaitUser = async () => {
   //     return await localStorage.getItem('Nome')
   //   }
@@ -53,10 +52,10 @@ const Transactions = () => {
   //   const [valorContaInit, setValorContaInit] = useState<any>(awaitSaldo())
 
   const renderScreen: Record<string, React.ReactNode> = {
-    transactions: <Transaction />,
-    history: <div className='text-white'>Histórico de transações</div>,
+    transactions: <Transaction setChaves={setChaves} chaves={chaves} setSaldo={setSaldo} />,
+    history: <div className="text-white">Histórico de transações</div>,
     chavepix: <PixkeyRegister />,
-    deposite: <Deposit />,
+    deposite: <Deposit setSaldo={setSaldo} />,
   }
 
   return (
@@ -70,18 +69,60 @@ const Transactions = () => {
       >
         <div className="flex flex-row px-10 py-3 w-full justify-between items-center">
           <div className="flex flex-col">
-            <p className="text-lg text-white">Bem vindo, {'Vitória'}!</p>
+            <p className="text-lg text-white">
+              Bem vindo, {localStorage.getItem('Nome')?.trim().split(' ')[0]}!
+            </p>
             <p className="text-sm text-white">Navegue entre as opções abaixo.</p>
           </div>
-          <div className="flex flex-col">
-            <p className="text-lg text-white">R$ {0}</p>
-            <p className="text-sm text-gray-600 text-end">seu saldo</p>
+          <div className="flex flex-row items-center gap-4">
+            <div className="flex flex-col">
+              <p className="text-lg text-white">R$ {saldo}</p>
+              <p className="text-sm text-white text-end">seu saldo</p>
+            </div>
+            <div className="flex flex-row gap-2 items-center">
+              <FaUserCircle
+                color="white"
+                size={30}
+                onClick={() => {
+                  setOpenUser(true)
+                }}
+              />
+              <IoNotificationsCircleOutline color="white" size={37} />
+            </div>
           </div>
         </div>
       </header>
       <div className="flex flex-row justify-center items-center w-full pb-10 pt-8">
         <div className="w-full mx-2 rounded-lg bg-[#000a0e]/25 shadow-sm border border-b-white/10 border-t-white/10 border-transparent  flex justify-center items-center">
           <p className="text-white text-lg font-bold py-2 text-center">Ações para a sua conta</p>
+        </div>
+      </div>
+
+      <div className="absolute z-50 bg-white right-10 top-20 w-1/4 rounded-sm p-4">
+        <p className="text-[#000a0e] font-bold">Dados da sua conta</p>
+        <div className="bg-[#000a0e]/25 justify-center px-2 ">
+          <p className="text-[#000a0e]">
+            CPF: <b>056.480.970-50</b>
+          </p>
+          <p className="text-[#000a0e]">
+            Nome: <b>056.480.970-50</b>
+          </p>
+
+          <p className="text-[#000a0e]">
+            Telefone: <b>056.480.970-50</b>
+          </p>
+
+          <p className="text-[#000a0e]">
+            E-mail: <b>056.480.970-50</b>
+          </p>
+
+          <p className="text-[#000a0e]">
+            Endereço: <b>056.480.970-50</b>
+          </p>
+
+          <p className="text-[#000a0e]">
+            Número da conta: <b>056.480.970-50</b>
+          </p>
         </div>
       </div>
 

@@ -12,7 +12,6 @@ const ModalPixConsult = ({ closeModal }: ModalPixConsultProps) => {
       cpf: '',
     },
     onSubmit: async ({ value }) => {
-      console.log('VALUEEE', value)
     },
   })
 
