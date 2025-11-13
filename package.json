@@ -14,6 +14,7 @@
     "@tanstack/zod-form-adapter": "^0.42.1",
     "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
+    "cypress": "^15.6.0",
     "encyrpt-decrypt-env": "^1.0.10",
     "jose": "^6.1.0",
     "next": "15.5.4",

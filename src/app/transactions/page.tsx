@@ -3,7 +3,7 @@ import { api } from '@/providers/api'
 import { useForm } from '@tanstack/react-form'
 import { useRouter } from 'next/navigation'
 import { use, useEffect, useState } from 'react'
-import { BsCoin } from 'react-icons/bs'
+import { BsCoin, BsPencilSquare } from 'react-icons/bs'
 import { FaHistory, FaUserCircle } from 'react-icons/fa'
 import { MdPix } from 'react-icons/md'
 import { TfiKey } from 'react-icons/tfi'
@@ -12,6 +12,8 @@ import PixkeyRegister from './utils/pix-key-register'
 import Deposit from './utils/deposit'
 import { set } from 'zod'
 import { IoNotificationsCircleOutline } from 'react-icons/io5'
+import { UserInfoProps } from './utils/interface'
+import { LiaMoneyBillWaveSolid } from 'react-icons/lia'
 
 const Transactions = () => {
   const route = useRouter()
@@ -20,36 +22,22 @@ const Transactions = () => {
   )
   const [saldo, setSaldo] = useState<number>(Number(localStorage.getItem('Saldo')) ?? 0)
   const [chaves, setChaves] = useState<{ chave: string; tipo: string }[]>([])
+  const [user, setUser] = useState<UserInfoProps>()
   const [openUser, setOpenUser] = useState(false)
 
   const form = useForm({
-    defaultValues: {
-      destino: '',
-      origem: '',
-      valor: 0,
-    },
+    defaultValues: user,
     onSubmit: async ({ value }) => {
+      // chamar a atualização do usuário
       const teste = await api.post('v1/autenticacao/login', {
         // email: form.getFieldValue('email'),
         // password: form.getFieldValue('password'),
       })
-      localStorage.setItem('Token', teste?.data.token)
-      localStorage.setItem('Nome', teste?.data.nameUser)
-      localStorage.setItem('Saldo', teste?.data.saldo)
-      setTimeout(() => {
-        route.push('/transactions')
-      }, 1000)
+
+
     },
   })
 
-  //   const awaitUser = async () => {
-  //     return await localStorage.getItem('Nome')
-  //   }
-  //   const awaitSaldo = async () => {
-  //     return await localStorage.getItem('Saldo')
-  //   }
-
-  //   const [valorContaInit, setValorContaInit] = useState<any>(awaitSaldo())
 
   const renderScreen: Record<string, React.ReactNode> = {
     transactions: <Transaction setChaves={setChaves} chaves={chaves} setSaldo={setSaldo} />,
@@ -57,6 +45,17 @@ const Transactions = () => {
     chavepix: <PixkeyRegister />,
     deposite: <Deposit setSaldo={setSaldo} />,
   }
+
+  useEffect(() => {
+    const getUser = async () => {
+      const teste = await api.get<UserInfoProps>(`v1/usuarios/${localStorage.getItem('UserId')}`)
+      setUser(teste.data)
+    }
+    getUser()
+
+  }, [])
+
+  const { Field } = form
 
   return (
     <div
@@ -93,35 +92,176 @@ const Transactions = () => {
         </div>
       </header>
       <div className="flex flex-row justify-center items-center w-full pb-10 pt-8">
-        <div className="w-full mx-2 rounded-lg bg-[#000a0e]/25 shadow-sm border border-b-white/10 border-t-white/10 border-transparent  flex justify-center items-center">
+        <div className="w-full mx-2 rounded-lg bg-white/5 backdrop-blur-lg border border-white/20 shadow-xl rounded-2xl m-2 py-2 shadow-sm border border-b-white/10 border-t-white/10 border-transparent  flex justify-center items-center">
           <p className="text-white text-lg font-bold py-2 text-center">Ações para a sua conta</p>
         </div>
       </div>
 
-      <div className="absolute z-50 bg-white right-10 top-20 w-1/4 rounded-sm p-4">
-        <p className="text-[#000a0e] font-bold">Dados da sua conta</p>
-        <div className="bg-[#000a0e]/25 justify-center px-2 ">
-          <p className="text-[#000a0e]">
-            CPF: <b>056.480.970-50</b>
-          </p>
-          <p className="text-[#000a0e]">
-            Nome: <b>056.480.970-50</b>
-          </p>
+      <div className="absolute z-50 bg-white/5 backdrop-blur-lg border border-white/20 shadow-xl right-10 top-20 w-1/3 rounded-sm p-4">
+        <p className="text-white font-bold text-center pb-4">Dados da sua conta</p>
+        <div className="bg-[#000a0e]/25 flex-col p-4 gap-4 flex">
+          <div className='flex flex-row justify-between items-center w-full'>
+            <Field name="cpfcnpj">
+              {(field) => (
+                <div className="flex flex-col gap-2 justify-center items-center">
+                  <div className="flex flex-row gap-2 items-center w-10/12 justify-start ms-1">
 
-          <p className="text-[#000a0e]">
-            Telefone: <b>056.480.970-50</b>
-          </p>
+                    <label htmlFor={field.name} className="text-xs text-white font-bold">
+                      <b>CPF</b>
+                    </label>
+                  </div>
+                  <input
+                    title="cpfcnpj"
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    className="w-10/12 bg-white/5 border border-white/20 rounded-lg px-4  text-white placeholder-white/50 focus:border-white/30 focus:outline-none py-1"
+                  />
+                </div>
+              )}
+            </Field>
+            <BsPencilSquare className='bg-red-600' />
 
-          <p className="text-[#000a0e]">
-            E-mail: <b>056.480.970-50</b>
-          </p>
+          </div>
 
-          <p className="text-[#000a0e]">
-            Endereço: <b>056.480.970-50</b>
-          </p>
 
-          <p className="text-[#000a0e]">
-            Número da conta: <b>056.480.970-50</b>
+
+          <Field name="nome">
+            {(field) => (
+              <div className="flex flex-col gap-2 justify-center items-center">
+                <div className="flex flex-row gap-2 items-center w-10/12 justify-start ms-1">
+
+                  <label htmlFor={field.name} className="text-xs text-white font-bold">
+                    <b>Nome</b>
+                  </label>
+                </div>
+                <input
+                  title="cpfcnpj"
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  className="w-10/12 bg-white/5 border border-white/20 rounded-lg px-4  text-white placeholder-white/50 focus:border-white/30 focus:outline-none py-1"
+                />
+              </div>
+            )}
+          </Field>
+
+          <Field name="telefone">
+            {(field) => (
+              <div className="flex flex-col gap-2 justify-center items-center">
+                <div className="flex flex-row gap-2 items-center w-10/12 justify-start ms-1">
+
+                  <label htmlFor={field.name} className="text-xs text-white font-bold">
+                    <b>Telefone</b>
+                  </label>
+                </div>
+                <input
+                  title="cpfcnpj"
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  className="w-10/12 bg-white/5 border border-white/20 rounded-lg px-4  text-white placeholder-white/50 focus:border-white/30 focus:outline-none py-1"
+                />
+              </div>
+            )}
+          </Field>
+
+          <Field name="email">
+            {(field) => (
+              <div className="flex flex-col gap-2 justify-center items-center">
+                <div className="flex flex-row gap-2 items-center w-10/12 justify-start ms-1">
+
+                  <label htmlFor={field.name} className="text-xs text-white font-bold">
+                    <b>E-mail</b>
+                  </label>
+                </div>
+                <input
+                  title="cpfcnpj"
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  className="w-10/12 bg-white/5 border border-white/20 rounded-lg px-4  text-white placeholder-white/50 focus:border-white/30 focus:outline-none py-1"
+                />
+              </div>
+            )}
+          </Field>
+
+          <Field name="bairro">
+            {(field) => (
+              <div className="flex flex-col gap-2 justify-center items-center">
+                <div className="flex flex-row gap-2 items-center w-10/12 justify-start ms-1">
+
+                  <label htmlFor={field.name} className="text-xs text-white font-bold">
+                    <b>Bairro</b>
+                  </label>
+                </div>
+                <input
+                  title="cpfcnpj"
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  className="w-10/12 bg-white/5 border border-white/20 rounded-lg px-4  text-white placeholder-white/50 focus:border-white/30 focus:outline-none py-1"
+                />
+              </div>
+            )}
+          </Field>
+
+          <Field name="cidade">
+            {(field) => (
+              <div className="flex flex-col gap-2 justify-center items-center">
+                <div className="flex flex-row gap-2 items-center w-10/12 justify-start ms-1">
+
+                  <label htmlFor={field.name} className="text-xs text-white font-bold">
+                    <b>Cidade</b>
+                  </label>
+                </div>
+                <input
+                  title="cpfcnpj"
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  className="w-10/12 bg-white/5 border border-white/20 rounded-lg px-4  text-white placeholder-white/50 focus:border-white/30 focus:outline-none py-1"
+                />
+              </div>
+            )}
+          </Field>
+
+          <Field name="rua">
+            {(field) => (
+              <div className="flex flex-col gap-2 justify-center items-center">
+                <div className="flex flex-row gap-2 items-center w-10/12 justify-start ms-1">
+
+                  <label htmlFor={field.name} className="text-xs text-white font-bold">
+                    <b>Rua</b>
+                  </label>
+                </div>
+                <input
+                  title="cpfcnpj"
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  className="w-10/12 bg-white/5 border border-white/20 rounded-lg px-4  text-white placeholder-white/50 focus:border-white/30 focus:outline-none py-1"
+                />
+              </div>
+            )}
+          </Field>
+
+          <p className="text-white px-4">
+            Número da conta: <b>{user?.id}</b>
           </p>
         </div>
       </div>
