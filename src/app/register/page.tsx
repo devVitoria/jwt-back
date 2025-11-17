@@ -30,7 +30,6 @@ const Register = () => {
       cep: '',
     },
     onSubmit: async () => {
-      console.log("Ta entrando aquiiiiii")
       const verify = await api.post(`v1/usuarios/verify-data`, {
         cpfcnpj: form.getFieldValue('cpfcnpj'),
         nome: form.getFieldValue('nome'),
@@ -45,7 +44,6 @@ const Register = () => {
           saldo: 0,
         },
       })
-      console.log("Verifyyyyy.data.exists", verify.data.exists)
       if (verify.data.exists) {
         const numberOfMessages = verify.data.message?.length
         const message = verify.data.message
