@@ -9,3 +9,20 @@ export interface UserInfoProps {
     email: string,
     password: string
 }
+
+
+export interface TransactionProps {
+    transacao: {
+        chave_origem: {
+            chave: string
+        },
+        chave_destino: {
+            chave: string
+        },
+        data_transferencia: string,
+        mensagem: string,
+        valor: number,
+        id: number
+    },
+    novoSaldo: number
+}

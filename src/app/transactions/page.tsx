@@ -10,7 +10,7 @@ import { TfiKey } from 'react-icons/tfi'
 import Transaction from './utils/transaction'
 import PixkeyRegister from './utils/pix-key-register'
 import Deposit from './utils/deposit'
-import { UserInfoProps } from './utils/interface'
+import { TransactionProps, UserInfoProps } from './utils/interface'
 import { toast } from 'react-toastify'
 import { BiSearchAlt } from 'react-icons/bi'
 
@@ -24,7 +24,7 @@ const Transactions = () => {
   const [searchData, setSearchData] = useState<{ open: boolean | null, data: string | null }>({ open: null, data: null })
   const [openUser, setOpenUser] = useState<boolean | null>(null)
   const [usersInfo, setUsersInfo] = useState<UserInfoProps[]>()
-  const [transactionsInfo, setTransactionsInfo] = useState<any[]>()
+  const [transactionsInfo, setTransactionsInfo] = useState<TransactionProps[]>()
 
 
   const router = useRouter()
@@ -52,6 +52,18 @@ const Transactions = () => {
 
     },
   })
+
+  useEffect(() => {
+    const getInfos = async () => {
+      const teste = await api.get("/v1/usuarios")
+      setUsersInfo(teste.data)
+      const teste2 = await api.get("/v1/transacoes")
+      setTransactionsInfo(teste2.data)
+    }
+
+    getInfos()
+
+  }, [])
 
 
 
@@ -374,7 +386,29 @@ const Transactions = () => {
             }))}>Transações</p>
           </div>
           <div className="bg-[#000a0e]/25 flex-col p-4 gap-4 flex">
-            <div className=' max-h-80 overflow-auto gap-4 flex flex-col'></div>
+            <div className=' max-h-80 overflow-auto gap-4 flex flex-col'>
+              {
+                searchData.data === 'user' && usersInfo !== undefined ? (
+
+                  usersInfo.map((i) => {
+                    return (
+                      <div className='flex flex-row'>
+                        <p>Nome: {i.nome}</p>
+                      </div>
+                    )
+
+                  })
+
+                ) : (
+                  <></>
+
+                )
+              }
+
+
+
+
+            </div>
           </div> </div>)
       }
       <main className="flex flex-row justify-between px-10 w-full gap-4">
